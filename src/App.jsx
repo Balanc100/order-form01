@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, ShoppingCart, Receipt, Upload, Download } from 'lucide-react';
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5a03OT8UMV65zDmUvfOe0D7882wEV4DRmI4q03ya6RIeRujsL-XfxCyOz23DadqNi/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxlSvmhVsd27Th_7QevouJDmJa5ZzaJoDkbBls8S4gqM4uydiIym5qNNVh96v2TqNyd/exec';
 export default function OrderForm() {
   const products = [
     { id: 1, name: 'BALANC 600 ml', price: 180 },
