@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, ShoppingCart, Receipt, Upload, Download } from 'lucide-react';
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyd8Fc0EKJwL13p9s5U--KX5kAveh0cV5pKTIQWzlbspzm--Z3UdPi2vvAS5xdKQAEX/exec';
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5a03OT8UMV65zDmUvfOe0D7882wEV4DRmI4q03ya6RIeRujsL-XfxCyOz23DadqNi/exec';
 export default function OrderForm() {
   const products = [
     { id: 1, name: 'BALANC 600 ml', price: 180 },
@@ -79,7 +79,7 @@ export default function OrderForm() {
     }
   };
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
     if (!customerInfo.name || !customerInfo.phone) {
       alert('กรุณากรอกชื่อและเบอร์โทรศัพท์');
       return;
@@ -104,24 +104,36 @@ const handleSubmit = async () => {
         })),
         subtotal: calculateSubtotal(),
         shipping: calculateShipping(),
-        total: calculateTotal()
+        total: calculateTotal(),
+        slipImage: slipPreview || null // ส่งรูปสลิปแบบ Base64
       };
       
-      // ส่งข้อมูลไป Google Sheets
-      await fetch(GOOGLE_APPS_SCRIPT_URL, {
+      // แสดง Loading
+      console.log('กำลังส่งข้อมูล...');
+      
+      // ส่งข้อมูลไป Google Sheets + Drive
+      const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(orderData)
       });
       
+      const result = await response.json();
+      console.log('ผลลัพธ์:', result);
+      
       // แสดงหน้าสรุปยอด
       setShowSummary(true);
       
+      if (result.status === 'success') {
+        alert('✅ บันทึกออเดอร์สำเร็จ!\n' + 
+              (slipPreview ? 'สลิปถูกอัพโหลดเรียบร้อยแล้ว' : ''));
+      }
+      
     } catch (error) {
       console.error('Error:', error);
+      alert('⚠️ บันทึกออเดอร์แล้ว แต่อาจมีปัญหาในการอัพโหลดสลิป');
       setShowSummary(true);
     }
   };
