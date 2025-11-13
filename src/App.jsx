@@ -133,7 +133,7 @@ export default function OrderForm() {
       
     } catch (error) {
       console.error('Error:', error);
-      alert('⚠️ บันทึกออเดอร์แล้ว แต่อาจมีปัญหาในการอัพโหลดสลิป');
+      alert('⚠️ กรุณาอัพโหลดสลิป');
       setShowSummary(true);
     }
   };
