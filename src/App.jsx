@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, ShoppingCart, Receipt, Upload, Download } from 'lucide-react';
-
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyd8Fc0EKJwL13p9s5U--KX5kAveh0cV5pKTIQWzlbspzm--Z3UdPi2vvAS5xdKQAEX/exec';
 export default function OrderForm() {
   const products = [
     { id: 1, name: 'BALANC 600 ml', price: 180 },
@@ -79,7 +79,7 @@ export default function OrderForm() {
     }
   };
 
-  const handleSubmit = () => {
+const handleSubmit = async () => {
     if (!customerInfo.name || !customerInfo.phone) {
       alert('กรุณากรอกชื่อและเบอร์โทรศัพท์');
       return;
@@ -91,7 +91,39 @@ export default function OrderForm() {
       return;
     }
     
-    setShowSummary(true);
+    try {
+      // เตรียมข้อมูลส่งไป Google Sheets
+      const orderData = {
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone,
+        customerAddress: customerInfo.address,
+        items: items.filter(item => item.name).map(item => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        subtotal: calculateSubtotal(),
+        shipping: calculateShipping(),
+        total: calculateTotal()
+      };
+      
+      // ส่งข้อมูลไป Google Sheets
+      await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      });
+      
+      // แสดงหน้าสรุปยอด
+      setShowSummary(true);
+      
+    } catch (error) {
+      console.error('Error:', error);
+      setShowSummary(true);
+    }
   };
 
   const saveOrder = () => {
